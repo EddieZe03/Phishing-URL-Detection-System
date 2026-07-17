@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phish Guard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-1: #010528;
+            --bg-2: #030d4f;
+            --bg-3: #004b8e;
+            --surface: rgba(8, 13, 62, 0.74);
+            --line: rgba(168, 201, 255, 0.28);
+            --text: #eef3ff;
+            --muted: #adbae3;
+            --accent: #6bd3ff;
+            --radius-lg: 28px;
+            --shadow-lg: 0 26px 44px rgba(1, 3, 20, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Space Grotesk", "Segoe UI", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 10% 10%, rgba(130, 230, 255, 0.2), transparent 34%),
+                radial-gradient(circle at 84% 80%, rgba(107, 211, 255, 0.18), transparent 38%),
+                linear-gradient(145deg, var(--bg-1) 0%, var(--bg-2) 48%, var(--bg-3) 100%);
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            position: relative;
+            isolation: isolate;
+            overflow-x: hidden;
+            opacity: 0;
+            transform: translateY(10px) scale(0.995);
+            filter: blur(2px);
+            transition:
+                opacity 360ms ease,
+                transform 420ms cubic-bezier(0.2, 0.75, 0.2, 1),
+                filter 420ms ease;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 50% 45%, rgba(130, 230, 255, 0.16), transparent 52%),
+                linear-gradient(145deg, rgba(1, 5, 40, 0.72), rgba(3, 13, 79, 0.72));
+            opacity: 0;
+            transition: opacity 300ms ease;
+            z-index: 3;
+        }
+
+        body.page-enter {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+
+        body.page-leave {
+            opacity: 0;
+            transform: translateY(-8px) scale(0.992);
+            filter: blur(2px);
+        }
+
+        body.page-leave::after {
+            opacity: 1;
+        }
+
+        .bg-tech {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .tech-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.68;
+        }
+
+        .landing {
+            width: min(860px, 100%);
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 40px 32px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            animation: rise 650ms ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            width: 126px;
+            height: 126px;
+            object-fit: contain;
+            border-radius: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.32);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px;
+        }
+
+        .title {
+            margin: 18px 0 10px;
+            font-family: "Michroma", sans-serif;
+            font-size: clamp(2rem, 6vw, 3.35rem);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #f5f9ff;
+            text-shadow: 0 0 18px rgba(130, 230, 255, 0.35);
+        }
+
+        .description {
+            width: min(620px, 100%);
+            margin: 0 auto;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1.65;
+        }
+
+        .actions {
+            margin-top: 28px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .start {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 28px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #00133a;
+            background: linear-gradient(130deg, #45b2ff, var(--accent));
+            box-shadow: 0 12px 20px rgba(69, 178, 255, 0.35);
+            transition: transform 120ms ease;
+        }
+
+        .start:hover {
+            transform: translateY(-2px);
+        }
+
+        .meta {
+            margin-top: 16px;
+            font-size: 0.84rem;
+            color: #95a5d7;
+        }
+
+        @keyframes rise {
+            from {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .landing {
+                padding: 34px 20px;
+            }
+
+            .title {
+                letter-spacing: 0.1em;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            body,
+            body::after {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-tech" aria-hidden="true">
+        <canvas class="tech-canvas" id="techCanvas"></canvas>
+    </div>
+    <main class="landing">
+        <img class="logo" src="{{ url_for('static', filename='logo.png') }}" alt="Phish Guard logo">
+        <h1 class="title">Phish Guard</h1>
+        <p class="description">
+            Phish Guard is a machine learning phishing URL detector that evaluates suspicious links and explains risk with clear confidence and safety recommendations before you click.
+        </p>
+        <div class="actions">
+            <a class="start" href="/analyze">Scan URL</a>
+            <a class="start" href="/scan-qr">Scan QR Code</a>
+        </div>
+    </main>
+
+    <script>
+        function initPageTransitions() {
+            const body = document.body;
+            const transitionDuration = 320;
+
+            function beginLeave(onComplete) {
+                if (body.dataset.isLeaving === '1') return;
+                body.dataset.isLeaving = '1';
+                body.classList.remove('page-enter');
+                body.classList.add('page-leave');
+                window.setTimeout(onComplete, transitionDuration);
+            }
+
+            requestAnimationFrame(() => {
+                body.classList.add('page-enter');
+            });
+
+            document.addEventListener('click', (event) => {
+                const link = event.target.closest('a[href]');
+                if (!link) return;
+
+                if (link.target && link.target !== '_self') return;
+                if (link.hasAttribute('download')) return;
+
+                const href = link.getAttribute('href');
+                if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+                    return;
+                }
+
+                const nextUrl = new URL(link.href, window.location.href);
+                if (nextUrl.origin !== window.location.origin) return;
+                if (nextUrl.href === window.location.href) return;
+
+                event.preventDefault();
+                beginLeave(() => {
+                    window.location.href = nextUrl.href;
+                });
+            });
+        }
+
+        function initTechPattern(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            let width = 0;
+            let height = 0;
+            let animationId = null;
+
+            const nodeCount = 36;
+            const nodes = [];
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = Math.floor(width * window.devicePixelRatio);
+                canvas.height = Math.floor(height * window.devicePixelRatio);
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+                ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+            }
+
+            function createNode() {
+                return {
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.28,
+                    vy: (Math.random() - 0.5) * 0.28,
+                    pulse: Math.random() * Math.PI * 2,
+                };
+            }
+
+            function initNodes() {
+                nodes.length = 0;
+                for (let i = 0; i < nodeCount; i++) {
+                    nodes.push(createNode());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < nodes.length; i++) {
+                    const a = nodes[i];
+                    a.x += a.vx;
+                    a.y += a.vy;
+                    a.pulse += 0.02;
+
+                    if (a.x < -20 || a.x > width + 20) a.vx *= -1;
+                    if (a.y < -20 || a.y > height + 20) a.vy *= -1;
+
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const b = nodes[j];
+                        const dx = a.x - b.x;
+                        const dy = a.y - b.y;
+                        const distance = Math.hypot(dx, dy);
+
+                        if (distance < 185) {
+                            const alpha = (1 - distance / 185) * 0.48;
+                            ctx.strokeStyle = `rgba(130, 230, 255, ${alpha})`;
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.stroke();
+                        }
+                    }
+
+                    const glow = 1.8 + Math.sin(a.pulse) * 0.9;
+                    ctx.fillStyle = 'rgba(130, 230, 255, 0.9)';
+                    ctx.beginPath();
+                    ctx.arc(a.x, a.y, glow, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                animationId = window.requestAnimationFrame(animate);
+            }
+
+            resize();
+            initNodes();
+            animate();
+
+            window.addEventListener('resize', () => {
+                resize();
+                initNodes();
+            });
+
+            window.addEventListener('beforeunload', () => {
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            });
+        }
+
+        window.addEventListener('load', () => {
+            initPageTransitions();
+            initTechPattern('techCanvas');
+        });
+    </script>
+</body>
+</html>

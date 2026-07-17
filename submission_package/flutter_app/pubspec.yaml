@@ -1,0 +1,45 @@
+name: phish_guard
+description: Phishing URL Detection System using Ensemble Learning - Mobile App
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # HTTP and API
+  http: ^1.1.0
+  
+  # QR Code scanning
+  mobile_scanner: ^3.4.0
+
+  # Image picking for QR scans from device gallery
+  image_picker: ^1.1.2
+  
+  # State management
+  provider: ^6.0.0
+  
+  # Material design
+  google_fonts: ^6.1.0
+  
+  # Navigation and routing
+  go_router: ^13.0.0
+  
+  # URL validation
+  url_launcher: ^6.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logo.png
